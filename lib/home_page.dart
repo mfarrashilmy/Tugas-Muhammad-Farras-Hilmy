@@ -1,9 +1,17 @@
 import 'package:flutter/material.dart';
+import 'login_page.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
-  // Daftar produk dengan detail lengkap
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  int _currentIndex = 0;
+
+  // Daftar produk
   final List<Map<String, dynamic>> products = const [
     {
       'name': 'Asus TUF', 
@@ -39,6 +47,112 @@ class HomePage extends StatelessWidget {
     },
   ];
 
+
+  // Daftar kategori
+  final List<Map<String, dynamic>> categories = const [
+    {
+      'name': 'Laptop',
+      'icon': Icons.laptop_mac,
+      'count': '24 Produk',
+      'color': 0xFF1565C0,
+    },
+    {
+      'name': 'Gaming',
+      'icon': Icons.sports_esports,
+      'count': '18 Produk',
+      'color': 0xFF6A1B9A,
+    },
+    {
+      'name': 'Accessories',
+      'icon': Icons.headset,
+      'count': '38 Produk',
+      'color': 0xFF00838F,
+    },
+    {
+      'name': 'Monitor',
+      'icon': Icons.monitor,
+      'count': '12 Produk',
+      'color': 0xFFAD1457,
+    },
+    {
+      'name': 'Storage',
+      'icon': Icons.storage,
+      'count': '20 Produk',
+      'color': 0xFF2E7D32,
+    },
+    {
+      'name': 'Keyboard',
+      'icon': Icons.keyboard,
+      'count': '15 Produk',
+      'color': 0xFFE65100,
+    },
+    {
+      'name': 'Mouse',
+      'icon': Icons.mouse,
+      'count': '22 Produk',
+      'color': 0xFF4527A0,
+    },
+    {
+      'name': 'Webcam',
+      'icon': Icons.videocam,
+      'count': '9 Produk',
+      'color': 0xFF00695C,
+    },
+  ];
+
+  // Daftar wishlist
+  final List<Map<String, dynamic>> wishlistItems = const [
+    {
+      'name': 'Asus TUF Gaming',
+      'price': 1500,
+      'imageUrl': 'PASTE_IMAGEURL_DISINI',
+      'rating': 4.5,
+      'specs': 'Intel i7, RTX 3060, 16GB RAM',
+    },
+    {
+      'name': 'Macbook Pro M2',
+      'price': 2000,
+      'imageUrl': 'PASTE_IMAGEURL_DISINI',
+      'rating': 4.9,
+      'specs': 'M2 Pro, 16GB RAM, 512GB SSD',
+    },
+    {
+      'name': 'Asus ROG',
+      'price': 4500,
+      'imageUrl': 'PASTE_IMAGEURL_DISINI',
+      'rating': 4.7,
+      'specs': 'Intel i9, RTX 4090, 32GB RAM',
+    },
+  ];
+
+  // Riwayat pesanan
+  final List<Map<String, dynamic>> orders = const [
+    {
+      'id': '#DTI-20241',
+      'name': 'Asus TUF Gaming',
+      'price': 1500,
+      'status': 'Delivered',
+      'date': '10 Apr 2025',
+      'statusColor': 0xFF2E7D32,
+    },
+    {
+      'id': '#DTI-20198',
+      'name': 'Macbook Air M1',
+      'price': 1000,
+      'status': 'On Delivery',
+      'date': '15 Apr 2025',
+      'statusColor': 0xFFE65100,
+    },
+    {
+      'id': '#DTI-20155',
+      'name': 'Mechanical Keyboard',
+      'price': 120,
+      'status': 'Processing',
+      'date': '18 Apr 2025',
+      'statusColor': 0xFF1565C0,
+    },
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,10 +160,7 @@ class HomePage extends StatelessWidget {
       appBar: AppBar(
         title: const Text(
           'DigiTechIndo',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 22,
-          ),
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
         ),
         centerTitle: false,
         backgroundColor: Colors.white,
@@ -58,17 +169,13 @@ class HomePage extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.search),
-            onPressed: () {
-              _showSearchDialog(context);
-            },
+            onPressed: () => _showSearchDialog(context),
           ),
           Stack(
             children: [
               IconButton(
                 icon: const Icon(Icons.shopping_cart),
-                onPressed: () {
-                  _showCartDialog(context);
-                },
+                onPressed: () => _showCartDialog(context),
               ),
               Positioned(
                 right: 8,
@@ -79,10 +186,7 @@ class HomePage extends StatelessWidget {
                     color: Colors.red,
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  constraints: const BoxConstraints(
-                    minWidth: 16,
-                    minHeight: 16,
-                  ),
+                  constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
                   child: const Text(
                     '3',
                     style: TextStyle(
@@ -98,69 +202,832 @@ class HomePage extends StatelessWidget {
           ),
         ],
       ),
-      body: Column(
+      body: IndexedStack(
+        index: _currentIndex,
         children: [
-          // Banner Promo
-          _buildPromoBanner(context),
-          const SizedBox(height: 16),
-          // Header Section
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  '🔥 Hot Products',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                TextButton(
-                  onPressed: () {},
-                  child: Text(
-                    'See All',
-                    style: TextStyle(
-                      color: Colors.blue.shade700,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 12),
-          // Grid Produk
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  childAspectRatio: 0.75, // Rasio untuk card tidak terlalu memanjang
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
-                ),
-                itemCount: products.length,
-                itemBuilder: (context, index) {
-                  final product = products[index];
-                  return _ProductCard(
-                    name: product['name'],
-                    price: product['price'],
-                    imageUrl: product['imageUrl'],
-                    rating: product['rating'],
-                    reviews: product['reviews'],
-                  );
-                },
-              ),
-            ),
-          ),
+          _buildHomeBody(),
+          _buildCategoriesBody(),
+          _buildWishlistBody(),
+          _buildProfileBody(),
         ],
       ),
       bottomNavigationBar: _buildBottomNavBar(),
     );
   }
 
+  // ─────────────────────────────────────────
+  // HOME
+  // ─────────────────────────────────────────
+  Widget _buildHomeBody() {
+    return Column(
+      children: [
+        _buildPromoBanner(context),
+        const SizedBox(height: 16),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                '🔥 Hot Products',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              TextButton(
+                onPressed: () {},
+                child: Text(
+                  'See All',
+                  style: TextStyle(
+                    color: Colors.blue.shade700,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: GridView.builder(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                childAspectRatio: 0.75,
+                crossAxisSpacing: 16,
+                mainAxisSpacing: 16,
+              ),
+              itemCount: products.length,
+              itemBuilder: (context, index) {
+                final product = products[index];
+                return _ProductCard(
+                  name: product['name'],
+                  price: product['price'],
+                  imageUrl: product['imageUrl'],
+                  rating: product['rating'],
+                  reviews: product['reviews'],
+                );
+              },
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  // ─────────────────────────────────────────
+  // CATEGORIES
+  // ─────────────────────────────────────────
+  Widget _buildCategoriesBody() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header
+          const Text(
+            'Semua Kategori',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Temukan produk sesuai kebutuhanmu',
+            style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
+          ),
+          const SizedBox(height: 20),
+          // List kategori
+          ListView.separated(
+            physics: const NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            itemCount: categories.length,
+            separatorBuilder: (_, __) => const SizedBox(height: 12),
+            itemBuilder: (context, index) {
+              final cat = categories[index];
+              final color = Color(cat['color']);
+              return InkWell(
+                onTap: () {},
+                borderRadius: BorderRadius.circular(16),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.shade200,
+                        blurRadius: 8,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      // Icon box
+                      Container(
+                        width: 52,
+                        height: 52,
+                        decoration: BoxDecoration(
+                          color: color.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: Icon(
+                          cat['icon'] as IconData,
+                          color: color,
+                          size: 28,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      // Nama & jumlah
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              cat['name'],
+                              style: const TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const SizedBox(height: 3),
+                            Text(
+                              cat['count'],
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey.shade500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      // Arrow
+                      Container(
+                        width: 32,
+                        height: 32,
+                        decoration: BoxDecoration(
+                          color: color.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Icon(
+                          Icons.arrow_forward_ios,
+                          size: 14,
+                          color: color,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ─────────────────────────────────────────
+  // WISHLIST
+  // ─────────────────────────────────────────
+  Widget _buildWishlistBody() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 20, 16, 4),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Wishlist Saya',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.blue.shade50,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  '${wishlistItems.length} item',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.blue.shade700,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+          child: Text(
+            'Produk yang kamu simpan',
+            style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
+          ),
+        ),
+        Expanded(
+          child: ListView.separated(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            itemCount: wishlistItems.length,
+            separatorBuilder: (_, __) => const SizedBox(height: 12),
+            itemBuilder: (context, index) {
+              final item = wishlistItems[index];
+              return Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.shade200,
+                      blurRadius: 8,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Row(
+                    children: [
+                      // Gambar produk
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.network(
+                          item['imageUrl'],
+                          width: 80,
+                          height: 80,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) => Container(
+                            width: 80,
+                            height: 80,
+                            color: Colors.grey.shade200,
+                            child: const Icon(Icons.laptop, size: 36),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 14),
+                      // Info produk
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              item['name'],
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              item['specs'],
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: Colors.grey.shade500,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 6),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  '\$${item['price']}',
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.green,
+                                  ),
+                                ),
+                                // Tombol Beli
+                                SizedBox(
+                                  height: 32,
+                                  child: ElevatedButton.icon(
+                                    onPressed: () {},
+                                    icon: const Icon(Icons.shopping_bag, size: 14),
+                                    label: const Text(
+                                      'Beli',
+                                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                                    ),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.blue.shade700,
+                                      foregroundColor: Colors.white,
+                                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      elevation: 0,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      // Tombol hapus wishlist
+                      IconButton(
+                        icon: Icon(Icons.favorite, color: Colors.red.shade400),
+                        onPressed: () {},
+                        tooltip: 'Hapus dari Wishlist',
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  // ─────────────────────────────────────────
+  // PROFILE
+  // ─────────────────────────────────────────
+  Widget _buildProfileBody() {
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          // ── Header profil ──
+          Container(
+            width: double.infinity,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Colors.blue.shade700, Colors.purple.shade700],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+            padding: const EdgeInsets.fromLTRB(20, 28, 20, 36),
+            child: Column(
+              children: [
+                Stack(
+                  children: [
+                    CircleAvatar(
+                      radius: 44,
+                      backgroundColor: Colors.white.withOpacity(0.2),
+                      child: const Text(
+                        'U',
+                        style: TextStyle(
+                          fontSize: 36,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child: GestureDetector(
+                        onTap: () => _showEditProfileDialog(context),
+                        child: Container(
+                          width: 28,
+                          height: 28,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.blue.shade700, width: 2),
+                          ),
+                          child: Icon(Icons.edit, size: 14, color: Colors.blue.shade700),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                const Text(
+                  'User DigiTechIndo',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'user@digitechinodo.com',
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.8),
+                    fontSize: 13,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // ── Stats row ──
+          Transform.translate(
+  offset: const Offset(0, -20),
+  child: Container(
+    margin: const EdgeInsets.symmetric(horizontal: 16),
+    padding: const EdgeInsets.symmetric(vertical: 16),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(16),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.grey.shade200,
+          blurRadius: 10,
+          offset: const Offset(0, 4),
+        ),
+      ],
+    ),
+    child: Row(
+      children: [
+        _buildStatItem('3', 'Pesanan'),
+        _buildDivider(),
+        _buildStatItem('2', 'Wishlist'),
+        _buildDivider(),
+        _buildStatItem('1', 'Review'),
+      ],
+    ),
+  ),
+),
+
+          const SizedBox(height: 24),
+
+          // ── Riwayat Pesanan ──
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Riwayat Pesanan',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                    TextButton(
+                      onPressed: () {},
+                      child: Text(
+                        'Lihat Semua',
+                        style: TextStyle(color: Colors.blue.shade700, fontSize: 13),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                ListView.separated(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: orders.length,
+                  separatorBuilder: (_, __) => const SizedBox(height: 10),
+                  itemBuilder: (context, index) {
+                    final order = orders[index];
+                    final statusColor = Color(order['statusColor']);
+                    return Container(
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(14),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.shade200,
+                            blurRadius: 6,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 44,
+                            height: 44,
+                            decoration: BoxDecoration(
+                              color: Colors.blue.shade50,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Icon(Icons.receipt_long, color: Colors.blue.shade700, size: 22),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  order['name'],
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  '${order['id']}  •  ${order['date']}',
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    color: Colors.grey.shade500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text(
+                                '\$${order['price']}',
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.green,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 3,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: statusColor.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Text(
+                                  order['status'],
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w600,
+                                    color: statusColor,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 24),
+
+          // ── Menu ──
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Pengaturan',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 10),
+                _buildMenuTile(
+                  icon: Icons.person_outline,
+                  iconColor: Colors.blue.shade700,
+                  label: 'Edit Profil',
+                  onTap: () => _showEditProfileDialog(context),
+                ),
+                _buildMenuTile(
+                  icon: Icons.notifications_none,
+                  iconColor: Colors.orange.shade700,
+                  label: 'Notifikasi',
+                  onTap: () {},
+                ),
+                _buildMenuTile(
+                  icon: Icons.lock_outline,
+                  iconColor: Colors.green.shade700,
+                  label: 'Keamanan',
+                  onTap: () {},
+                ),
+                _buildMenuTile(
+                  icon: Icons.help_outline,
+                  iconColor: Colors.purple.shade700,
+                  label: 'Bantuan',
+                  onTap: () {},
+                ),
+                const SizedBox(height: 12),
+                // Tombol Logout
+                SizedBox(
+                  width: double.infinity,
+                  height: 52,
+                  child: ElevatedButton.icon(
+                    onPressed: () => _showLogoutDialog(context),
+                    icon: const Icon(Icons.logout),
+                    label: const Text(
+                      'Logout',
+                      style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red.shade50,
+                      foregroundColor: Colors.red.shade700,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                        side: BorderSide(color: Colors.red.shade200),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 30),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ─────────────────────────────────────────
+  // HELPER WIDGETS
+  // ─────────────────────────────────────────
+  Widget _buildStatItem(String value, String label) {
+    return Expanded(
+      child: Column(
+        children: [
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.blue.shade700,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            label,
+            style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDivider() {
+    return Container(width: 1, height: 36, color: Colors.grey.shade200);
+  }
+
+  Widget _buildMenuTile({
+    required IconData icon,
+    required Color iconColor,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.shade200,
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: ListTile(
+        leading: Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: iconColor.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Icon(icon, color: iconColor, size: 20),
+        ),
+        title: Text(
+          label,
+          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+        ),
+        trailing: Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey.shade400),
+        onTap: onTap,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+      ),
+    );
+  }
+
+  // ─────────────────────────────────────────
+  // DIALOGS
+  // ─────────────────────────────────────────
+  void _showLogoutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text('Konfirmasi Logout', style: TextStyle(fontWeight: FontWeight.bold)),
+        content: const Text('Apakah kamu yakin ingin keluar dari akun ini?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Batal', style: TextStyle(color: Colors.grey.shade600)),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (_) => const LoginPage()),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red.shade600,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            ),
+            child: const Text('Logout'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showEditProfileDialog(BuildContext context) {
+    final nameCtrl = TextEditingController(text: 'User DigiTechIndo');
+    final emailCtrl = TextEditingController(text: 'user@digitechinodo.com');
+    final phoneCtrl = TextEditingController(text: '+62 812 3456 7890');
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) => Padding(
+        padding: EdgeInsets.fromLTRB(
+          20, 20, 20, MediaQuery.of(context).viewInsets.bottom + 20,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade300,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'Edit Profil',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 20),
+            _buildTextField(controller: nameCtrl, label: 'Nama Lengkap', icon: Icons.person_outline),
+            const SizedBox(height: 12),
+            _buildTextField(controller: emailCtrl, label: 'Email', icon: Icons.email_outlined),
+            const SizedBox(height: 12),
+            _buildTextField(controller: phoneCtrl, label: 'Nomor HP', icon: Icons.phone_outlined),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue.shade700,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                ),
+                child: const Text('Simpan Perubahan', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+  }) {
+    return TextField(
+      controller: controller,
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: Icon(icon, color: Colors.blue.shade700),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.grey.shade300),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.blue.shade700, width: 2),
+        ),
+      ),
+    );
+  }
+
+  // ─────────────────────────────────────────
+  // PROMO BANNER & BOTTOM NAV (tidak berubah)
+  // ─────────────────────────────────────────
   Widget _buildPromoBanner(BuildContext context) {
     return Container(
       margin: const EdgeInsets.all(16),
@@ -185,11 +1052,7 @@ class HomePage extends StatelessWidget {
           Positioned(
             right: -20,
             top: -20,
-            child: Icon(
-              Icons.discount,
-              size: 100,
-              color: Colors.white.withOpacity(0.1),
-            ),
+            child: Icon(Icons.discount, size: 100, color: Colors.white.withOpacity(0.1)),
           ),
           Padding(
             padding: const EdgeInsets.all(16.0),
@@ -200,41 +1063,14 @@ class HomePage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text(
-                        'Special Offer!',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                      const Text('Special Offer!', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 4),
-                      Text(
-                        'Up to 20% OFF',
-                        style: TextStyle(
-                          color: Colors.white.withOpacity(0.95),
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                      Text('Up to 20% OFF', style: TextStyle(color: Colors.white.withOpacity(0.95), fontSize: 20, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 6),
                       Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          'Code: DIGI20',
-                          style: TextStyle(
-                            color: Colors.blue.shade700,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 11,
-                          ),
-                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20)),
+                        child: Text('Code: DIGI20', style: TextStyle(color: Colors.blue.shade700, fontWeight: FontWeight.bold, fontSize: 11)),
                       ),
                     ],
                   ),
@@ -242,15 +1078,8 @@ class HomePage extends StatelessWidget {
                 Container(
                   width: 60,
                   height: 60,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.shopping_bag,
-                    size: 30,
-                    color: Colors.white,
-                  ),
+                  decoration: BoxDecoration(color: Colors.white.withOpacity(0.2), shape: BoxShape.circle),
+                  child: const Icon(Icons.shopping_bag, size: 30, color: Colors.white),
                 ),
               ],
             ),
@@ -265,11 +1094,7 @@ class HomePage extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
-          BoxShadow(
-            color: Colors.grey.shade200,
-            blurRadius: 10,
-            offset: const Offset(0, -5),
-          ),
+          BoxShadow(color: Colors.grey.shade200, blurRadius: 10, offset: const Offset(0, -5)),
         ],
       ),
       child: BottomNavigationBar(
@@ -279,25 +1104,13 @@ class HomePage extends StatelessWidget {
         unselectedItemColor: Colors.grey.shade600,
         selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
         items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.category),
-            label: 'Categories',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.favorite_border),
-            label: 'Wishlist',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            label: 'Profile',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.category), label: 'Categories'),
+          BottomNavigationBarItem(icon: Icon(Icons.favorite_border), label: 'Wishlist'),
+          BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'Profile'),
         ],
-        currentIndex: 0,
-        onTap: (index) {},
+        currentIndex: _currentIndex,
+        onTap: (index) => setState(() => _currentIndex = index),
       ),
     );
   }
@@ -307,9 +1120,7 @@ class HomePage extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
@@ -320,9 +1131,7 @@ class HomePage extends StatelessWidget {
                   decoration: InputDecoration(
                     hintText: 'Search products...',
                     prefixIcon: const Icon(Icons.search),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                     filled: true,
                     fillColor: Colors.grey.shade50,
                   ),
@@ -331,14 +1140,10 @@ class HomePage extends StatelessWidget {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
+                    onPressed: () => Navigator.pop(context),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue.shade700,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
                     child: const Text('Search'),
                   ),
@@ -364,13 +1169,7 @@ class HomePage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Shopping Cart',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              const Text('Shopping Cart', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
               const SizedBox(height: 20),
               Expanded(
                 child: ListView.builder(
@@ -380,18 +1179,12 @@ class HomePage extends StatelessWidget {
                       leading: Container(
                         width: 50,
                         height: 50,
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade200,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
+                        decoration: BoxDecoration(color: Colors.grey.shade200, borderRadius: BorderRadius.circular(10)),
                         child: const Icon(Icons.laptop),
                       ),
                       title: const Text('Product Name'),
                       subtitle: const Text('\$999'),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.delete_outline),
-                        onPressed: () {},
-                      ),
+                      trailing: IconButton(icon: const Icon(Icons.delete_outline), onPressed: () {}),
                     );
                   },
                 ),
@@ -405,14 +1198,9 @@ class HomePage extends StatelessWidget {
                   onPressed: () {},
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue.shade700,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
-                  child: const Text(
-                    'Checkout',
-                    style: TextStyle(fontSize: 16),
-                  ),
+                  child: const Text('Checkout', style: TextStyle(fontSize: 16)),
                 ),
               ),
             ],
@@ -423,6 +1211,9 @@ class HomePage extends StatelessWidget {
   }
 }
 
+// ─────────────────────────────────────────
+// PRODUCT CARD (tidak berubah)
+// ─────────────────────────────────────────
 class _ProductCard extends StatelessWidget {
   final String name;
   final int price;
@@ -443,9 +1234,7 @@ class _ProductCard extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           child: Container(
             padding: const EdgeInsets.all(20),
             child: Column(
@@ -454,57 +1243,30 @@ class _ProductCard extends StatelessWidget {
                 Container(
                   width: 80,
                   height: 80,
-                  decoration: BoxDecoration(
-                    color: Colors.green.shade50,
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.check_circle,
-                    size: 50,
-                    color: Colors.green,
-                  ),
+                  decoration: BoxDecoration(color: Colors.green.shade50, shape: BoxShape.circle),
+                  child: const Icon(Icons.check_circle, size: 50, color: Colors.green),
                 ),
                 const SizedBox(height: 16),
-                const Text(
-                  'Added to Cart!',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                const Text('Added to Cart!', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 8),
-                Text(
-                  '$name has been added to your cart',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.grey.shade600),
-                ),
+                Text('$name has been added to your cart', textAlign: TextAlign.center, style: TextStyle(color: Colors.grey.shade600)),
                 const SizedBox(height: 20),
                 Row(
                   children: [
                     Expanded(
                       child: OutlinedButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        style: OutlinedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
+                        onPressed: () => Navigator.pop(context),
+                        style: OutlinedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
                         child: const Text('Continue Shopping'),
                       ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
+                        onPressed: () => Navigator.pop(context),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.blue.shade700,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                         ),
                         child: const Text('View Cart'),
                       ),
@@ -526,137 +1288,66 @@ class _ProductCard extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
-          BoxShadow(
-            color: Colors.grey.shade200,
-            blurRadius: 8,
-            offset: const Offset(0, 3),
-          ),
+          BoxShadow(color: Colors.grey.shade200, blurRadius: 8, offset: const Offset(0, 3)),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Gambar produk - dipotong rapi dengan ClipRRect
           ClipRRect(
-            borderRadius: const BorderRadius.vertical(
-              top: Radius.circular(16),
-            ),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
             child: Image.network(
               imageUrl,
               height: 140,
               width: double.infinity,
-              fit: BoxFit.cover, // Gambar dipotong rapi sesuai ukuran
+              fit: BoxFit.cover,
               loadingBuilder: (context, child, loadingProgress) {
                 if (loadingProgress == null) return child;
-                return Container(
-                  height: 140,
-                  color: Colors.grey.shade200,
-                  child: const Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                );
+                return Container(height: 140, color: Colors.grey.shade200, child: const Center(child: CircularProgressIndicator()));
               },
               errorBuilder: (context, error, stackTrace) {
-                return Container(
-                  height: 140,
-                  color: Colors.grey.shade200,
-                  child: const Icon(Icons.broken_image, size: 40),
-                );
+                return Container(height: 140, color: Colors.grey.shade200, child: const Icon(Icons.broken_image, size: 40));
               },
             ),
           ),
-          // Content
           Padding(
             padding: const EdgeInsets.all(10.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Nama produk
-                Text(
-                  name,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
+                Text(name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14), maxLines: 1, overflow: TextOverflow.ellipsis),
                 const SizedBox(height: 4),
-                // Rating
                 Row(
                   children: [
                     Row(
                       children: List.generate(5, (index) {
-                        if (index < rating.floor()) {
-                          return const Icon(
-                            Icons.star,
-                            size: 12,
-                            color: Colors.amber,
-                          );
-                        } else if (index < rating) {
-                          return const Icon(
-                            Icons.star_half,
-                            size: 12,
-                            color: Colors.amber,
-                          );
-                        } else {
-                          return Icon(
-                            Icons.star_border,
-                            size: 12,
-                            color: Colors.grey.shade400,
-                          );
-                        }
+                        if (index < rating.floor()) return const Icon(Icons.star, size: 12, color: Colors.amber);
+                        if (index < rating) return const Icon(Icons.star_half, size: 12, color: Colors.amber);
+                        return Icon(Icons.star_border, size: 12, color: Colors.grey.shade400);
                       }),
                     ),
                     const SizedBox(width: 4),
-                    Text(
-                      '($reviews)',
-                      style: TextStyle(
-                        fontSize: 9,
-                        color: Colors.grey.shade600,
-                      ),
-                    ),
+                    Text('($reviews)', style: TextStyle(fontSize: 9, color: Colors.grey.shade600)),
                   ],
                 ),
                 const SizedBox(height: 8),
-                // Harga
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          '\$$price',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                            color: Colors.green,
-                          ),
-                        ),
-                        Text(
-                          '\$${(price * 1.1).toInt()}',
-                          style: TextStyle(
-                            fontSize: 10,
-                            color: Colors.grey.shade500,
-                            decoration: TextDecoration.lineThrough,
-                          ),
-                        ),
+                        Text('\$$price', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.green)),
+                        Text('\$${(price * 1.1).toInt()}', style: TextStyle(fontSize: 10, color: Colors.grey.shade500, decoration: TextDecoration.lineThrough)),
                       ],
                     ),
-                    // Tombol BELI SEKARANG
                     ElevatedButton(
                       onPressed: () => _showBuyDialog(context),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue.shade700,
                         foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 8,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                         elevation: 2,
                         minimumSize: const Size(70, 32),
                       ),
@@ -665,13 +1356,7 @@ class _ProductCard extends StatelessWidget {
                         children: [
                           Icon(Icons.shopping_bag, size: 14),
                           SizedBox(width: 4),
-                          Text(
-                            'Beli',
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                          Text('Beli', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
                         ],
                       ),
                     ),
